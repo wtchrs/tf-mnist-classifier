@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import sys
+import os
 
 
 def plot_image(i, pred_ys, y_test, img):
@@ -19,7 +20,7 @@ def plot_image(i, pred_ys, y_test, img):
     plt.imshow(img, cmap=plt.cm.binary)
 
     predicted_label = np.argmax(pred_ys)
-    y_test = np.argmax(y_test)
+
     if predicted_label == y_test:
         color = 'blue'
     else:
@@ -47,15 +48,15 @@ def plot_value_array(i, pred_ys, true_label):
 if __name__ == '__main__':
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-    x_train_scaled = x_train.reshape(-1, 28, 28, 1) / 255.0
+    x_train = x_train.reshape(-1, 28, 28, 1) / 255.0
     x_test_scaled = x_test.reshape(-1, 28, 28, 1) / 255.0
 
-    x_train_scaled, x_val, y_train, y_val = train_test_split(x_train_scaled, y_train, test_size=0.2)
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2)
 
-    print(x_train_scaled[0].shape)
+    print(x_train[0].shape)
 
     if len(sys.argv) < 2 or sys.argv[1] != '1':
-        model = load_model('best-cnn-model.h5')
+        model = load_model(os.path.dirname(__file__) + '\\best-cnn-model.h5')
     else:
         model = Sequential([Conv2D(32, kernel_size=3, activation='relu', padding='same', input_shape=(28, 28, 1)),
                             MaxPooling2D(2),
@@ -70,9 +71,12 @@ if __name__ == '__main__':
         model.summary()
 
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics='accuracy')
-        checkpoint_cb = ModelCheckpoint('best-cnn-model.h5', save_best_only=True)
+
+        checkpoint_cb = ModelCheckpoint(os.path.dirname(__file__) + '\\best-cnn-model.h5',
+                                        verbose=1, save_best_only=True)
         early_stopping_cb = EarlyStopping(patience=5, restore_best_weights=True)
-        history = model.fit(x_train_scaled, y_train, epochs=50, validation_data=(x_val, y_val),
+
+        history = model.fit(x_train, y_train, epochs=50, validation_data=(x_val, y_val),
                             callbacks=[checkpoint_cb, early_stopping_cb])
 
         plt.figure(figsize=(12, 5))

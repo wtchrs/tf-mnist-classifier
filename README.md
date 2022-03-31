@@ -12,7 +12,7 @@ cd tf-mnist-classifier
 The model is built with Tensorflow, so you can run it after installing Tensorflow package using the following command:
 
 ```sh
-pip install tensorflow
+pip install tensorflow sklearn numpy matplotlib
 
 # or, using requirements.txt
 pip install -r requirements.txt
@@ -22,8 +22,10 @@ After installing required packages, run the following command:
 
 ```sh
 # Just using pre-trained model:
-python tf_mnist_cnn.py
+python src/tf_mnist_cnn.py
+python src/tf_cifar10_cnn.py
 
 # Retraining model:
-python tf_mnist_cnn.py 1
+python src/tf_mnist_cnn.py 1
+python src/tf_cifar10_cnn.py 1
 ```
